@@ -1,0 +1,9 @@
+Building Summitzcoin
+
+See doc/readme-qt.rst for instructions on building Summitzcoin-Qt,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of Summitzcoin.
+
+See doc/build-*.txt for instructions on building summitzcoind,
+the intended-for-services, no-graphical-interface, reference
+implementation of Summitzcoin.
