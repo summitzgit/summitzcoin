@@ -35,7 +35,7 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0xcb016c109bd77fcaa9db94f2bf7caf7d6db74646e0439d3760706d2fb47d9512");
+uint256 hashGenesisBlock("0xa6e8b8510d2a2db8309457f997a3c17bd5e0bf7ee6827c87bc669019fbde2734");
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Summitzcoin: starting difficulty is 1 / 2^12
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
@@ -1087,18 +1087,18 @@ uint256 static GetOrphanRoot(const CBlockHeader* pblock)
 
 int64 static GetBlockValue(int nHeight, int64 nFees)
 {
-    int64 nSubsidy = 100 * COIN; //50 -> 100
+    int64 nSubsidy = 8 * COIN; //50 -> 100
 
     // Subsidy is cut in half every 840000 blocks, which will occur approximately every 4 years
     nSubsidy >>= (nHeight / 1314000); // Summitzcoin: 5 years, BlockHalving
 
     if (nHeight <= 1)
-        return 7000000000 * COIN;
+        return 2978976000 * COIN;
 
     return nSubsidy + nFees;
 }
 
-static const int64 nTargetTimespan = 1 * 24 * 60 * 60; // Summitzcoin: 1 day, BlockDifficulty
+static const int64 nTargetTimespan = 2 * 60; // Summitzcoin: 1 day, BlockDifficulty
 static const int64 nTargetSpacing = 2 * 60; // Summitzcoin: 2 minutes, BlockTime
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
@@ -2745,11 +2745,11 @@ bool LoadBlockIndex()
 {
     if (fTestNet)
     {
-        pchMessageStart[0] = 0xfa; //fc, This is Magic Number.
+        pchMessageStart[0] = 0xf6; //fc, This is Magic Number.
         pchMessageStart[1] = 0xc1; //c1
         pchMessageStart[2] = 0xbd; //b7
         pchMessageStart[3] = 0xd4; //dc
-        hashGenesisBlock = uint256("0xafca7e37d42c8ac179edfdf671b86c151a537e9b045ba8e0f3a92b02b31d70c7");
+        hashGenesisBlock = uint256("0xc728da52012f92981bc072e0cbeb54f886c4111401d1a4c260b836ceb9e85dfe");
     }
 
     //
@@ -2787,24 +2787,24 @@ bool InitBlockIndex() {
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 100 * COIN;
+        txNew.vout[0].nValue = 8 * COIN; ///////////////////////////////////////////////
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("049c13378bb9d7c4339b595274d23ce29491d447305e2feba5450d29fd85db9520e02ec8cea5132e277689f4b09bfc850cc02851de5cde7c5930b9bdeb010aec18") << OP_CHECKSIG;
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1526196289;
+        block.nTime    = 1538708396;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 2085772052;
+        block.nNonce   = 2086149499;
 
         if (fTestNet)
         {
-            block.nTime    = 1526196273;
-            block.nNonce   = 394575543;
+            block.nTime    = 1538708378;
+            block.nNonce   = 396541655;
         }
 
-if (false && block.GetHash() != hashGenesisBlock)
+	if (false && block.GetHash() != hashGenesisBlock)
         {
             printf("Searching for genesis block...\n");
             // This will figure out a valid hash and Nonce if you're
@@ -2815,20 +2815,20 @@ if (false && block.GetHash() != hashGenesisBlock)
 
             loop
             {
-#if defined(USE_SSE2)
+		#if defined(USE_SSE2)
                 // Detection would work, but in cases where we KNOW it always has SSE2,
                 // it is faster to use directly than to use a function pointer or conditional.
-#if defined(_M_X64) || defined(__x86_64__) || defined(_M_AMD64) || (defined(MAC_OSX) && defined(__i386__))
+		#if defined(_M_X64) || defined(__x86_64__) || defined(_M_AMD64) || (defined(MAC_OSX) && defined(__i386__))
                 // Always SSE2: x86_64 or Intel MacOS X
                 scrypt_1024_1_1_256_sp_sse2(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
-#else
+		#else
                 // Detect SSE2: 32bit x86 Linux or Windows
                 scrypt_1024_1_1_256_sp(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
-#endif
-#else
+		#endif
+		#else
                 // Generic scrypt
                 scrypt_1024_1_1_256_sp_generic(BEGIN(block.nVersion), BEGIN(thash), scratchpad);
-#endif
+		#endif
                 if (thash <= hashTarget)
                     break;
                 if ((block.nNonce & 0xFFF) == 0)
@@ -2852,7 +2852,7 @@ if (false && block.GetHash() != hashGenesisBlock)
         printf("%s\n", hash.ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x87e34404d00876a2db908ee21fbabc7f04dfd3675b1fa392e9be515e362d6663"));
+        assert(block.hashMerkleRoot == uint256("0x08329c9b3128b4bee1e17df899058b11d8e9eaa1abae0eb2aa5cb9977b9b59d7"));
         block.print();
         assert(hash == hashGenesisBlock);
 
@@ -3125,7 +3125,7 @@ bool static AlreadyHave(const CInv& inv)
 // The message start string is designed to be unlikely to occur in normal data.
 // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
 // a large 4-byte int at any alignment.
-unsigned char pchMessageStart[4] = { 0xf0, 0xc1, 0xb6, 0xda }; // Summitzcoin: increase each by adding 2 to bitcoin's value.
+unsigned char pchMessageStart[4] = { 0xf5, 0xc1, 0xb6, 0xda }; // Summitzcoin: increase each by adding 2 to bitcoin's value.
 
 
 void static ProcessGetData(CNode* pfrom)
